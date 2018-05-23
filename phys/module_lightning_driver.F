@@ -26,12 +26,11 @@
 !**********************************************************************
 
  SUBROUTINE lightning_init ( &
-                              id, itimestep, restart, dt, dx           &
+                              itimestep, restart, dt, dx               &
                             ! Namelist control options
                              ,cu_physics,mp_physics,do_radar_ref       &
                              ,lightning_option, lightning_dt           &
                              ,lightning_start_seconds                  &
-                             ,ltngacttime                              &
                              ,iccg_prescribed_num, iccg_prescribed_den &
                              ,cellcount_method                         &
                             ! Order dependent args for domain, mem, and tile dims
@@ -54,13 +53,11 @@
  IMPLICIT NONE
 !-----------------------------------------------------------------
 
- INTEGER,  INTENT(IN)        :: id
  INTEGER,  INTENT(IN)        :: itimestep
  LOGICAL,  INTENT(IN)        :: restart
  REAL,     INTENT(IN)        :: dt,dx
  INTEGER,  INTENT(IN)        :: cu_physics,mp_physics,do_radar_ref,lightning_option
  REAL,     INTENT(IN)        :: lightning_dt, lightning_start_seconds
- REAL,     INTENT(INOUT)     :: ltngacttime
  REAL,     INTENT(IN)        :: iccg_prescribed_num, iccg_prescribed_den
  INTEGER,  INTENT(INOUT)     :: cellcount_method
  INTEGER , INTENT(IN)        :: ids, ide, jds, jde, kds, kde,  &
@@ -84,24 +81,9 @@
 !-----------------------------------------------------------------
 
 !-- do not reset unless it is the first timestep or lightning_option is on
- IF (lightning_option .eq. 0) THEN
-   return
- ENDIF
+ IF (itimestep .gt. 0 .or. lightning_option .eq. 0) return
 
-!-- check to see if lightning_dt is less than zero
- IF ( lightning_dt <= 0. ) THEN
-    CALL nl_set_lightning_dt( id, dt )
- ENDIF
-
-!-- restarting?  Code after this point is only executed on the very
-!                first time step of the simulation
- IF (itimestep .gt. 0 ) THEN
-   return
- ENDIF
-
- ltngacttime = lightning_start_seconds
-
-!--  check to see if the prescribed IC:CG ratio is valid (0/0 and -1 are not allowed)
+ !--  check to see if the prescribed IC:CG ratio is valid (0/0 and -1 are not allowed)
  IF (iccg_prescribed_den .eq. 0. .and. iccg_prescribed_num .eq. 0.) THEN
     CALL wrf_error_fatal (' lightning_init: iccg_prescribed cannot be 0.0/0.0')
  ENDIF
@@ -129,8 +111,8 @@
 
     ! Convective parameterized
     CASE (ltng_cpm_PR92z)
-        IF ( cu_physics .ne. GDSCHEME .and. cu_physics .ne. G3SCHEME .and. cu_physics .ne. GFSCHEME  ) THEN
-          CALL wrf_error_fatal( ' lightning_init: Selected lightning option requires GD, G3, or GF convective parameterization' )
+        IF ( cu_physics .ne. GDSCHEME .and. cu_physics .ne. G3SCHEME  ) THEN
+          CALL wrf_error_fatal( ' lightning_init: Selected lightning option requires GD or G3 convective parameterization' )
         ENDIF
 
         WRITE(message, * ) ' lightning_init: CPM lightning option selected: ', lightning_option
@@ -224,7 +206,7 @@
 
  SUBROUTINE lightning_driver ( &
                           ! Frequently used prognostics
-                            curr_secs, dt, dx, dy,                &
+                            itimestep, dt, dx, dy,                &
                             xlat, xlon, xland, ht,                &
                             t_phy, p_phy, rho, u, v, w,           &
                             th_phy, pi_phy,dz8w,                  &  
@@ -237,7 +219,6 @@
                             lightning_option,                     &
                             lightning_dt,                         &
                             lightning_start_seconds,              &
-                            ltngacttime,                          &
                             flashrate_factor,                     &
                           ! IC:CG namelist settings
                             iccg_method,                          &
@@ -287,7 +268,7 @@
 !-----------------------------------------------------------------
 
 ! Frequently used prognostics
- REAL(8), INTENT(IN   )    ::       curr_secs
+ INTEGER, INTENT(IN   )    ::       itimestep
  REAL,    INTENT(IN   )    ::       dt, dx, dy
 
  REAL,    DIMENSION( ims:ime,          jms:jme ),           INTENT(IN   ) :: xlat, xlon, xland, ht
@@ -308,7 +289,6 @@
 ! Mandatory namelist inputs
  INTEGER, INTENT(IN   )    ::       lightning_option
  REAL,    INTENT(IN   )    ::       lightning_dt, lightning_start_seconds, flashrate_factor
- REAL,    INTENT(INOUT)    ::       ltngacttime
 
 ! IC:CG namelist settings
  INTEGER, INTENT(IN   )    ::       iccg_method
@@ -330,11 +310,8 @@
 
 
 ! Local variables
- REAL(8) :: LtngActivationTime
- REAL(8) :: nextTime
  REAL, DIMENSION( ims:ime, jms:jme ) :: total_flashrate
  CHARACTER (LEN=80) :: message
- LOGICAL :: do_ltng
 
  REAL, PARAMETER            :: reflthreshold = 20. ! reflectivity threshold for CRM schemes
  REAL, DIMENSION( kms:kme ) :: cellcount
@@ -343,17 +320,19 @@
 
  IF ( lightning_option .eq. 0 ) RETURN
 
- nextTime = curr_secs + REAL(dt,8)
- LtngActivationTime = REAL(ltngacttime,8)
- do_ltng = LtngActivationTime >= curr_secs .and. LtngActivationTime <= nextTime
-
- IF( .not. do_ltng ) THEN
-   RETURN
+ !-- Make sure lightning_dt is a multiple of dt.
+ IF ( MOD(lightning_dt,dt) .ne. 0 ) THEN 
+    CALL wrf_error_fatal (' lightning_driver: lightning_dt needs to be a multiple of model time step dt')
  ENDIF
+
+ IF ( itimestep * dt .lt. lightning_start_seconds ) RETURN
+
+ IF ( MOD((itimestep * dt - lightning_start_seconds), lightning_dt ) .ne. 0 ) RETURN
+
 
 !-----------------------------------------------------------------
 ! This driver performs several steps in order to produce lightning
-! flash rate and flash count diagnostics:
+! flash rate and flash count diagnostics (if needed):
 !
 ! 1. Determine cloud extents for specific CRM schemes
 ! 2. Total flash rate assignment to 2D array
@@ -441,7 +420,7 @@
 
     ! LPI lightning options
 #if (EM_CORE==1)
-    CASE( ltng_lpi )
+     CASE( ltng_lpi )
         CALL wrf_debug ( 100, ' lightning_driver: calling Light Potential Index' )
         IF(F_QG) THEN
         CALL   calclpi(W=w,                              &
@@ -636,14 +615,6 @@
 
  ic_flashcount(its:ite,jts:jte) = ic_flashcount(its:ite,jts:jte) + ic_flashrate(its:ite,jts:jte) * lightning_dt
  cg_flashcount(its:ite,jts:jte) = cg_flashcount(its:ite,jts:jte) + cg_flashrate(its:ite,jts:jte) * lightning_dt
- 
- do
-   if( REAL(ltngacttime,8) <= nextTime ) then
-     ltngacttime = ltngacttime + lightning_dt
-   else
-     exit
-   endif
- enddo
 
 !-----------------------------------------------------------------
 
