@@ -786,7 +786,7 @@
        IF ( config_flags%use_theta_m == 0 ) THEN
           qvf = 1.+rvovrd*moist(i,k,j,P_QV)
        ELSE
-          qvf = 1
+       qvf = 1.+rvovrd*moist(i,k,j,P_QV)
        END IF
        grid%p(i,k,j)=p1000mb*( (r_d*(t0+grid%t_1(i,k,j))*qvf)/                     &
                   (p1000mb*(grid%al(i,k,j)+grid%alb(i,k,j))) )**cpovcv  &
@@ -1253,6 +1253,7 @@ endif
                     ! IC and CG flash rates and accumulated flash count
                         ,ic_flashcount=grid%ic_flashcount, ic_flashrate=grid%ic_flashrate        &
                         ,cg_flashcount=grid%cg_flashcount, cg_flashrate=grid%cg_flashrate        &
+                        ,lpi=grid%lpi                                                            &
 #if (WRF_CHEM == 1)
                         ,lnox_opt=config_flags%lnox_opt           &
                         ,lnox_passive=config_flags%lnox_passive   &

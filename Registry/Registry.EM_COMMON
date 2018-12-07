@@ -404,6 +404,16 @@ state    real   U10              ij     misc        1         -     irh01{22}{23
 state    real   V10              ij     misc        1         -     irh01{22}{23}du     "V10"                "V at 10 M"         "m s-1"
 # LPI
 state    real   LPI              ij     misc        1         -     rhdu   "LPI"                 "Lightning Potential Index"      "m^2 s-2"
+state    real   FED              ij     misc        1         -     rhdu   "FED"                 "Flash extent density"      "# km-2 min-1"
+state    real   FED1             ij     misc        1         -     rhdu   "FED1"                "Flash extent density 1"    "# km-2 min-1"
+state    real   FED2             ij     misc        1         -     rhdu   "FED2"                "Flash extent density 2"    "# km-2 min-1"
+state    real   FED3             ij     misc        1         -     rhdu   "FED3"                "Flash extent density 3"    "# km-2 min-1"
+state    real   FED4             ij     misc        1         -     rhdu   "FED4"                "Flash extent density 4"    "# km-2 min-1"
+state    real   FED5             ij     misc        1         -     rhdu   "FED5"                "Flash extent density 5"    "# km-2 min-1"
+state    real   FED6             ij     misc        1         -     rhdu   "FED6"                "Flash extent density 6"    "# km-2 min-1"
+state    real   FED7             ij     misc        1         -     rhdu   "FED7"                "Flash extent density 7"    "# km-2 min-1"
+state    real   FED8             ij     misc        1         -     rhdu   "FED8"                "Flash extent density 8"    "# km-2 min-1"
+state    real   FED9             ij     misc        1         -     rhdu   "FED9"                "Flash extent density 9"    "# km-2 min-1"
 
 # these next 4 are for observational nudging
 state    real   uratx           ij      misc        1         -      r          "URATX"            "Ratio of U over U10 on mass points "         "dimensionless"
@@ -1443,7 +1453,7 @@ state    real  diffuse_frac     ij      misc        1         -      rd       "D
 state   real    swddir       ij     misc         1         -     rd     "SWDDIR"     "Shortwave surface downward direct irradiance" "W m-2" ""
 state   real    swddirc      ij     misc         1         -     rd     "SWDDIRC"    "Clear-sky Shortwave surface downward direct irradiance" "W m-2" ""
 state   real    swddni       ij     misc         1         -     rd     "SWDDNI"     "Shortwave surface downward direct normal irradiance" "W m-2" ""
-state   real    swddnic      ij     misc         1         -     rd     "SWDDNIC"    "Clear-sky Shortwave surface downward direct normal irradiance" "W m-2" ""
+state   real    swddni       ij     misc         1         -     rd     "SWDDNI"     "Shortwave surface downward direct normal irradiance" "W m-2" ""
 state   real    swddif       ij     misc         1         -     rd     "SWDDIF"     "Shortwave surface downward diffuse irradiance" "W m-2" ""
 state   real    Gx           ij     misc         1         -     rd     "Gx" "" ""
 state   real    Bx           ij     misc         1         -     rd     "Bx" "" ""
@@ -2916,6 +2926,7 @@ package	ltng_crm_PR92w      lightning_option==1            -       state:ic_flas
 package ltng_crm_PR92z      lightning_option==2            -       state:ic_flashcount,ic_flashrate,cg_flashcount,cg_flashrate
 package	ltng_cpm_PR92z      lightning_option==11           -       state:ic_flashcount,ic_flashrate,cg_flashcount,cg_flashrate
 package	ltng_lpi            lightning_option==3           -        state:lpi
+package	ltng_fed            lightning_option==101         -        state:fed
 # only need to specify these once; not for every io_form* variable
 package   io_intio    io_form_restart==1                     -             -
 package   io_netcdf   io_form_restart==2                     -             -
