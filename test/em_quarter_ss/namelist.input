@@ -23,13 +23,14 @@
  io_form_restart                     = 2
  io_form_input                       = 2
  io_form_boundary                    = 2
- /
+ debug_level                         = 100 
+/
 
  &domains
  time_step                           = 12,
  time_step_fract_num                 = 0,
  time_step_fract_den                 = 1,
- max_dom                             = 1,
+ max_dom                             = 2,
  s_we                                = 1,     1,     1,
  e_we                                = 42,    43,    43,
  s_sn                                = 1,     1,     1,
@@ -50,7 +51,8 @@
  /
 
  &physics
- mp_physics                          = 1,     1,     1,
+ mp_physics                          = 8,     8,     1,
+ do_radar_ref                        = 1,
  ra_lw_physics                       = 0,     0,     0,
  ra_sw_physics                       = 0,     0,     0,
  radt                                = 30,    30,    30,
@@ -59,7 +61,9 @@
  bl_pbl_physics                      = 0,     0,     0,
  bldt                                = 0,     0,     0,
  cu_physics                          = 0,     0,     0,
- cudt                                = 5,     5,     5,
+ cudt                                = 0,     0,     5,
+ lightning_option                    = 101,   101,     5,
+ lightning_dt                        = 12,    4,     5,
  /
 
  &fdda

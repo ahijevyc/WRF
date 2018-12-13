@@ -119,6 +119,7 @@ CONTAINS
 
       !  Time (s) since the beginning of the simulation, restart.
 
+      REAL(8) :: curr_secs
       REAL :: curr_secs2
 
       !  Is this to be a history output time?  If so, compute the diagnostics.

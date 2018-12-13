@@ -404,16 +404,19 @@ state    real   U10              ij     misc        1         -     irh01{22}{23
 state    real   V10              ij     misc        1         -     irh01{22}{23}du     "V10"                "V at 10 M"         "m s-1"
 # LPI
 state    real   LPI              ij     misc        1         -     rhdu   "LPI"                 "Lightning Potential Index"      "m^2 s-2"
-state    real   FED              ij     misc        1         -     rhdu   "FED"                 "Flash extent density"      "# km-2 min-1"
-state    real   FED1             ij     misc        1         -     rhdu   "FED1"                "Flash extent density 1"    "# km-2 min-1"
-state    real   FED2             ij     misc        1         -     rhdu   "FED2"                "Flash extent density 2"    "# km-2 min-1"
-state    real   FED3             ij     misc        1         -     rhdu   "FED3"                "Flash extent density 3"    "# km-2 min-1"
-state    real   FED4             ij     misc        1         -     rhdu   "FED4"                "Flash extent density 4"    "# km-2 min-1"
-state    real   FED5             ij     misc        1         -     rhdu   "FED5"                "Flash extent density 5"    "# km-2 min-1"
-state    real   FED6             ij     misc        1         -     rhdu   "FED6"                "Flash extent density 6"    "# km-2 min-1"
-state    real   FED7             ij     misc        1         -     rhdu   "FED7"                "Flash extent density 7"    "# km-2 min-1"
-state    real   FED8             ij     misc        1         -     rhdu   "FED8"                "Flash extent density 8"    "# km-2 min-1"
-state    real   FED9             ij     misc        1         -     rhdu   "FED9"                "Flash extent density 9"    "# km-2 min-1"
+state    real   fed              ij     misc        1         -     rh     "fed"                 "flash extent density"      "flashes km-2"     # (based on ice water path)
+state    real   fed1             ij     misc        1         -     rh     "fed1"                "updraft5 vol"              "m^3 per grid box" # (5 m/s updraft threshold)
+state    real   fed2             ij     misc        1         -     rh     "fed2"                "flash rate updraft5 vol"   "flashes"          # (3 m/s updraft threshold)
+state    real   fed3             ij     misc        1         -     rh     "fed3"                "updraft3 vol"              "m^3 per grid box"
+state    real   fed4             ij     misc        1         -     rh     "fed4"                "flash rate updraft3 vol"   "flashes"
+state    real   fed5             ij     misc        1         -     rh     "fed5"                "flash rate McCaul"         "flashes"
+state    real   fed6             ij     misc        1         -     rh     "fed6"                "flash rate precip ice"     "flashes"
+state    real   fed7             ij     misc        1         -     rh     "fed7"                "flash rate ice mass flx p" "flashes"
+state    real   fed8             ij     misc        1         -     rh     "fed8"                "ice mass flux product"     "kg2 m s-2"
+state    real   fed9             ij     misc        1         -     rh     "fed9"                "ice water path"            "kg m-2"
+state    real   fed10            ij     misc        1         -     rh     "fed10"               "graupel mass"              "kg per grid box"
+state    real   fed11            ij     misc        1         -     rh     "fed11"               "ice mass"                  "kg per grid box"
+state    real   fed12            ij     misc        1         -     rh     "fed12"               "snow mass"                 "kg per grid box"
 
 # these next 4 are for observational nudging
 state    real   uratx           ij      misc        1         -      r          "URATX"            "Ratio of U over U10 on mass points "         "dimensionless"
@@ -1453,7 +1456,7 @@ state    real  diffuse_frac     ij      misc        1         -      rd       "D
 state   real    swddir       ij     misc         1         -     rd     "SWDDIR"     "Shortwave surface downward direct irradiance" "W m-2" ""
 state   real    swddirc      ij     misc         1         -     rd     "SWDDIRC"    "Clear-sky Shortwave surface downward direct irradiance" "W m-2" ""
 state   real    swddni       ij     misc         1         -     rd     "SWDDNI"     "Shortwave surface downward direct normal irradiance" "W m-2" ""
-state   real    swddni       ij     misc         1         -     rd     "SWDDNI"     "Shortwave surface downward direct normal irradiance" "W m-2" ""
+state   real    swddnic      ij     misc         1         -     rd     "SWDDNIC"    "Clear-sky Shortwave surface downward direct normal irradiance" "W m-2" ""
 state   real    swddif       ij     misc         1         -     rd     "SWDDIF"     "Shortwave surface downward diffuse irradiance" "W m-2" ""
 state   real    Gx           ij     misc         1         -     rd     "Gx" "" ""
 state   real    Bx           ij     misc         1         -     rd     "Bx" "" ""
@@ -2926,7 +2929,7 @@ package	ltng_crm_PR92w      lightning_option==1            -       state:ic_flas
 package ltng_crm_PR92z      lightning_option==2            -       state:ic_flashcount,ic_flashrate,cg_flashcount,cg_flashrate
 package	ltng_cpm_PR92z      lightning_option==11           -       state:ic_flashcount,ic_flashrate,cg_flashcount,cg_flashrate
 package	ltng_lpi            lightning_option==3           -        state:lpi
-package	ltng_fed            lightning_option==101         -        state:fed
+package	ltng_fed            lightning_option==101         -        state:fed,fed1,fed2,fed3,fed4,fed5,fed6,fed7,fed8,fed9,fed10,fed11,fed12
 # only need to specify these once; not for every io_form* variable
 package   io_intio    io_form_restart==1                     -             -
 package   io_netcdf   io_form_restart==2                     -             -
