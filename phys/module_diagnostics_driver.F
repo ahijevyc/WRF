@@ -227,7 +227,8 @@ CONTAINS
             grid%cg_flashcount, grid%cg_flashrate,          &
             grid%lpi,grid%fed,                                &
             grid%fed1,grid%fed2,grid%fed3,grid%fed4,grid%fed5,&
-            grid%fed6,grid%fed7,grid%fed8,grid%fed9           &
+            grid%fed6,grid%fed7,grid%fed8,grid%fed9,          &
+            grid%fed10,grid%fed11,grid%fed12                  &
       )    
       END IF LIGHTNING
 

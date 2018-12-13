@@ -41,7 +41,6 @@
                             ! IC and CG flash rates and accumulated flash count
                              ,ic_flashcount, ic_flashrate              &
                              ,cg_flashcount, cg_flashrate              &
-                             ,lpi                                      &
 #if ( WRF_CHEM == 1 )
                              ,lnox_opt,lnox_passive                    &
                             ! LNOx tracers (chemistry only)
@@ -70,7 +69,7 @@
 ! Making these optional just in case qualitative lightning indices get implemented
  REAL, OPTIONAL, DIMENSION( ims:ime,jms:jme ), &
                  INTENT(OUT) :: ic_flashcount, ic_flashrate, &
-                                cg_flashcount, cg_flashrate, lpi
+                                cg_flashcount, cg_flashrate
 
 #if ( WRF_CHEM == 1 )
  INTEGER, INTENT(IN)         :: lnox_opt
@@ -251,7 +250,8 @@
                             lpi,fed,                              &
                           ! Optional outputs for flash extent density scheme
                                  fed1,fed2,fed3,fed4,             &
-                            fed5,fed6,fed7,fed8,fed9              &
+                            fed5,fed6,fed7,fed8,fed9,             &
+                            fed10,fed11,fed12                     &
                           )
 !-----------------------------------------------------------------
 ! Framework
@@ -298,6 +298,7 @@
  REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT), OPTIONAL :: FED
  REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT), OPTIONAL ::      FED1,FED2,FED3,FED4
  REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT), OPTIONAL :: FED5,FED6,FED7,FED8,FED9
+ REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT), OPTIONAL :: FED10,FED11,FED12
 ! Mandatory namelist inputs
  INTEGER, INTENT(IN   )    ::       lightning_option
  REAL,    INTENT(IN   )    ::       lightning_dt, lightning_start_seconds, flashrate_factor
@@ -478,6 +479,7 @@
                  ,ITS=its,ITE=ite, JTS=jts,JTE=jte, KTS=kts,KTE=kte &
                  ,FED1=fed1,FED2=fed2,FED3=fed3,FED4=fed4,FED5=fed5 &
                  ,FED6=fed6,FED7=fed7,FED8=fed8,FED9=fed9           &
+                 ,FED10=fed10,FED11=fed11,FED12=fed12               &
                  )
         ELSE
         WRITE(wrf_err_message, * ) ' lightning_driver: FED option needs Microphysics Option with graupel,snow,and ice '

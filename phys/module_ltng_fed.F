@@ -22,7 +22,7 @@ CONTAINS
                         ,IMS,IME, JMS,JME, KMS,KME                & ! memory
                         ,ITS,ITE, JTS,JTE, KTS,KTE                & ! tile
                         ,FED1, FED2, FED3, FED4, FED5, FED6       & ! OPTIONAL
-                        ,FED7, FED8, FED9                         &
+                        ,FED7, FED8, FED9, FED10,FED11,FED12      &
                                                                   )
 
       USE MODULE_WRF_ERROR
@@ -53,7 +53,8 @@ CONTAINS
           FED
 
       REAL, INTENT(OUT), DIMENSION(IMS:IME,JMS:JME), OPTIONAL ::  &
-          FED1, FED2, FED3, FED4, FED5, FED6, FED7, FED8, FED9
+          FED1, FED2, FED3, FED4, FED5, FED6, FED7, FED8, FED9,   &
+          FED10,FED11,FED12
 
 ! DEFINE LOCAL DATA
       REAL, DIMENSION(KTS:KTE):: TEMPC
@@ -69,7 +70,7 @@ CONTAINS
 
       REAL, PARAMETER :: TMAXC    =   0.    ! TEMPERATURE THRESHOLD IN CELSIUS
       REAL, PARAMETER :: WMIN     =   5.    ! VERTICAL VEL THRESHOLD (M/S)
-      REAL, PARAMETER :: WMIN2    =   0.    ! VERTICAL VEL THRESHOLD (M/S)
+      REAL, PARAMETER :: WMIN2    =   3.    ! VERTICAL VEL THRESHOLD (M/S)
       REAL, PARAMETER :: CELS2K   = 273.15
       REAL, PARAMETER :: XNOG     =   4.0E4 !LIN SNOW FALL SPEED
       REAL, PARAMETER :: CDRAG    =   0.6
@@ -102,20 +103,22 @@ CONTAINS
 
             ! CALCULATE MASS AND FLUX WITH A SINGLE LOOP THRU THE VERTICAL
             DO K = KTS,KTE
-               WRITE(MESSAGE,'(" LTNG_FED: K=",I8)') K
+               WRITE(MESSAGE,'(" LTNG_FED: I,J,K=",I8,I8,I8)') I,J,K
                CALL WRF_DEBUG(600, MESSAGE)
 
                ! TEMPERATURE OF LAYER (CELSIUS)
                TEMPC(K)     = TH_PHY(I,K,J)*PI_PHY(I,K,J)-CELS2K
 
-               ! CHECK TEMPERATURE
-               ! ADD TO MASS OF AIR AND GRAUPEL IN GRID VOLUME IF TEMPERATURE IS AT OR BELOW TMAXC.
-               ! ALSO ADD TO ICE AND PRECIP MASS FLUX IF TEMP <= TMAXC
+               ! IF TEMPERATURE <= TMAXC
+               ! ADD MASS OF AIR IN GRID VOLUME TO AIR_MASS
+               ! ADD MASS OF GRAUPEL IN GRID VOLUME
+               ! ADD MASS OF ICE IN GRID VOLUME
+               ! ADD MASS OF SNOW IN GRID VOLUME
                IF(TEMPC(K).LE.TMAXC)THEN 
                    
                   ! COULD FORCE POSITIVE MIXING RATIOS HERE, BUT NEGATIVE VALUES ARE SMALL?
 
-                  AIR_VOL    = DX * DY * DZ8W(I,K,J)
+                  AIR_VOL    =      DX * DY * DZ8W(I,K,J)
                   AIR_MASS   = AIR_MASS   + (AIR_VOL * RHO_PHY(I,K,J)) 
                   GRAUP_MASS = GRAUP_MASS + (QG(I,K,J) * AIR_MASS)
                   ICE_MASS   = ICE_MASS   + (QI(I,K,J) * AIR_MASS)
@@ -170,11 +173,18 @@ CONTAINS
 
             FED(I,J)  = LIGHTIWP
 
-            FED1(I,J) = LIGHTWVOL
-            FED2(I,J) = LIGHTWVOL2
-            FED3(I,J) = LIGHTIWP
-            FED4(I,J) = LIGHTPRECIP_ICE
-            FED5(I,J) = LIGHTFLUX
+            FED1(I,J)  = W_VOL 
+            FED2(I,J)  = LIGHTWVOL
+            FED3(I,J)  = W_VOL2
+            FED4(I,J)  = LIGHTWVOL2
+            FED5(I,J)  = LIGHTIWP
+            FED6(I,J)  = LIGHTPRECIP_ICE
+            FED7(I,J)  = LIGHTFLUX
+            FED8(I,J)  = FLUXPROD
+            FED9(I,J)  = IWP
+            FED10(I,J) = GRAUP_MASS
+            FED11(I,J) = ICE_MASS
+            FED12(I,J) = SNOW_MASS
 
          END DO
       END DO
