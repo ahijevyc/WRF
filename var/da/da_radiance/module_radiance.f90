@@ -14,22 +14,17 @@ module module_radiance
             gas_id_watervapour,  &
             sensor_id_ir,        &
             sensor_id_mw,        &
-            sensor_id_hi,        &
-            sensor_id_po
+            sensor_id_hi
    use rttov_types, only :  &
          rttov_options,     &
          rttov_opts_rt_ir,  &
          rttov_coefs,       &
-         rttov_profile,      &
-         rttov_transmission, &
-         rttov_radiance,     &
+         profile_type,      &
+         transmission_type, &
+         radiance_type,     &
          rttov_chanprof,    &
          rttov_emissivity
    use parkind1, only : jpim, jprb
-   use mod_rttov_emis_atlas, only : &
-         rttov_emis_atlas_data, &
-         atlas_type_mw, &
-         atlas_type_ir
 #endif
 
 #ifdef CRTM
@@ -144,8 +139,6 @@ module module_radiance
    type (rttov_coefs), allocatable   :: coefs(:)     ! coefficients structure
    type (rttov_options), allocatable :: opts(:)      ! options structure
    type (rttov_opts_rt_ir), allocatable :: opts_rt_ir(:) ! options structure
-   type (rttov_emis_atlas_data) :: atlas
-   integer(jpim), allocatable :: atlas_type(:), atlas_id(:)
 #endif
 
    type satinfo_type

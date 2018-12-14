@@ -35,10 +35,8 @@ subroutine da_check_max_iv_pilot(iv, it, num_qcstat_conv)
                        num_qcstat_conv(1,pilot,1,ipr) = num_qcstat_conv(1,pilot,1,ipr) + 1
                        if(failed) then
                           num_qcstat_conv(2,pilot,1,ipr) = num_qcstat_conv(2,pilot,1,ipr) + 1
-                          if ( write_rej_obs_conv ) then
                           write(qcstat_conv_unit,'(2x,a10,2x,a4,3f12.2)')&
                           'pilot',ob_vars(1),iv%info(pilot)%lat(k,n),iv%info(pilot)%lon(k,n),0.01*iv%pilot(n)%p(k)
-                          end if
                        end if
                    end if
                 end if
@@ -50,10 +48,8 @@ subroutine da_check_max_iv_pilot(iv, it, num_qcstat_conv)
                         num_qcstat_conv(1,pilot,2,ipr) = num_qcstat_conv(1,pilot,2,ipr) + 1
                         if(failed)then
                            num_qcstat_conv(2,pilot,2,ipr) = num_qcstat_conv(2,pilot,2,ipr) + 1
-                           if ( write_rej_obs_conv ) then
                            write(qcstat_conv_unit,'(2x,a10,2x,a4,3f12.2)')&
                            'pilot',ob_vars(2),iv%info(pilot)%lat(k,n),iv%info(pilot)%lon(k,n),0.01*iv%pilot(n)%p(k)
-                           end if
                         end if
                     end if
                 end if
@@ -65,10 +61,8 @@ subroutine da_check_max_iv_pilot(iv, it, num_qcstat_conv)
                         num_qcstat_conv(1,pilot,1,ipr) = num_qcstat_conv(1,pilot,1,ipr) + 1
                         if(failed) then
                            num_qcstat_conv(2,pilot,1,ipr) = num_qcstat_conv(2,pilot,1,ipr) + 1
-                           if ( write_rej_obs_conv ) then
                            write(qcstat_conv_unit,'(2x,a10,2x,a4,3f12.2)')&
                            'pilot',ob_vars(1),iv%info(pilot)%lat(k,n),iv%info(pilot)%lon(k,n),0.01*iv%pilot(n)%p(k)
-                           end if
                         end if
                     end if
                 end if
@@ -80,10 +74,8 @@ subroutine da_check_max_iv_pilot(iv, it, num_qcstat_conv)
                         num_qcstat_conv(1,pilot,2,ipr) = num_qcstat_conv(1,pilot,2,ipr) + 1
                         if(failed)then
                            num_qcstat_conv(2,pilot,2,ipr) = num_qcstat_conv(2,pilot,2,ipr) + 1
-                           if ( write_rej_obs_conv ) then
                            write(qcstat_conv_unit,'(2x,a10,2x,a4,3f12.2)')&
                            'pilot',ob_vars(2),iv%info(pilot)%lat(k,n),iv%info(pilot)%lon(k,n),0.01*iv%pilot(n)%p(k)
-                           end if
                         end if
                     end if
                 end if
@@ -120,15 +112,11 @@ subroutine da_check_max_iv_pilot(iv, it, num_qcstat_conv)
 
                if(failed1 .or. failed2) then
                   num_qcstat_conv(2,pilot,1,ipr) = num_qcstat_conv(2,pilot,1,ipr) + 1
-                  if ( write_rej_obs_conv ) then
                   write(qcstat_conv_unit,'(2x,a10,2x,a4,3f12.2)')&
                         'pilot',ob_vars(1),iv%info(pilot)%lat(k,n),iv%info(pilot)%lon(k,n),0.01*iv%pilot(n)%p(k)
-                  end if
                   num_qcstat_conv(2,pilot,2,ipr) = num_qcstat_conv(2,pilot,2,ipr) + 1
-                  if ( write_rej_obs_conv ) then
                   write(qcstat_conv_unit,'(2x,a10,2x,a4,3f12.2)')&
                         'pilot',ob_vars(2),iv%info(pilot)%lat(k,n),iv%info(pilot)%lon(k,n),0.01*iv%pilot(n)%p(k)
-                  end if
                endif
            endif
 
