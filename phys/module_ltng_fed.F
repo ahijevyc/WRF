@@ -173,7 +173,7 @@ CONTAINS
             ! LIGHTNING FLASH EXTENT DENSITY ESTIMATES
             LIGHTFLUX       = FLUXPROD * 9E-17
             LIGHTIWP        =     IWP  * 0.20 / 2000**2 * DX * DY ! McCaul et al. 2009
-            LIGHTPRECIP_ICE =       7. * GRAUP_MASS *3.4E-8
+            LIGHTPRECIP_ICE =     3.4E-8 * GRAUP_MASS - 18.1     ! flashes per minute; Deierling et al. 2008
             LIGHTWVOL       =    W_VOL * 6.75E-10                ! Deierling and Petersen 2008
             LIGHTWVOL2      =   W_VOL2 * 6.75E-10                ! Deierling and Petersen 2008
 
