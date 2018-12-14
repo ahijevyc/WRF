@@ -97,7 +97,7 @@ CONTAINS
             ICE_MASS         = 0.
             SNOW_MASS        = 0.
             PRECIP_MASS_FLUX = 0.
-            ICE_MASS_FLUX    = 0.
+            ICE_MASS_FLUX    = 0. ! UPWARD
             W_VOL            = 0.
             W_VOL2           = 0.
 
@@ -114,6 +114,8 @@ CONTAINS
                ! ADD MASS OF GRAUPEL IN GRID VOLUME
                ! ADD MASS OF ICE IN GRID VOLUME
                ! ADD MASS OF SNOW IN GRID VOLUME
+               ! ADD DOWNWARD PRECIP MASS FLUX
+               ! ADD UPWARD ICE MASS FLUX 
                IF(TEMPC(K).LE.TMAXC)THEN 
                    
                   ! COULD FORCE POSITIVE MIXING RATIOS HERE, BUT NEGATIVE VALUES ARE SMALL?
@@ -134,21 +136,25 @@ CONTAINS
                      PRECIP_MASS_FLUX = PRECIP_MASS_FLUX + ( GRAUP_MASS * VTG ) ! IF YOU SUBTRACT W FROM VTG, YOU MAY GET NEGATIVE FLUX
                   END IF
 
-                  ! ADD TO ICE MASS FLUX IF QS>1E-8
+                  ! IF QI>1E-8 AND W>0 ADD ICE TO ICE MASS FLUX
+                  IF(QI(I,K,J).GT.1E-8 .AND. W(I,K,J).GT.0) THEN
+                     ICE_MASS_FLUX = ICE_MASS_FLUX + ICE_MASS * W(I,K,J)
+                  END IF
+
+                  ! IF QS>1E-8 ADD SNOW TO EITHER ICE MASS FLUX OR PRECIP MASS FLUX
+                  ! DEPENDING ON FALL SPEED AND VERTICAL MOTION
                   IF(QS(I,K,J).GT.1E-8)THEN
 
                      TMP1 = (PICONST*RHOSNOW*XNOS/(RHO_PHY(I,K,J)*QS(I,K,J)))**0.25
                      TMP2 = SQRT(1.29/RHO_PHY(I,K,J))
                      VTS = (1./6.) * CONSTC * GAMDP4 * TMP2 / (TMP1**CONSTD)
 
-                     ! IF VERTICAL MOTION EXCEEDS SNOW FALL SPEED AND VERTICAL MOTION > 0,
-                     !  ADD SNOW AND ICE MASS FLUX TO TOTAL ICE MASS FLUX
-                     IF(W(I,K,J).GT.VTS .AND. W(I,K,J).GT.0) THEN
-                        ICE_MASS_FLUX = ICE_MASS_FLUX + SNOW_MASS * (W(I,K,J)-VTS) + ICE_MASS * W(I,K,J)
+                     ! IF SNOW IS BEING LOFTED UPWARD, ADD SNOW TO ICE MASS FLUX
+                     IF(W(I,K,J).GT.VTS) THEN
+                        ICE_MASS_FLUX = ICE_MASS_FLUX + SNOW_MASS * (W(I,K,J)-VTS) 
                      ELSE
-                        ! ELSE IF FALL SPEED EXCEEDS VERTICAL MOTION OR VERTICAL MOTION < 0,
-                        !   ADD SNOW MASS FLUX TO PRECIP MASS FLUX
-                        PRECIP_MASS_FLUX = PRECIP_MASS_FLUX + ( SNOW_MASS * VTS )
+                        ! ELSE IF SNOW IS FALLING, ADD SNOW TO PRECIP MASS FLUX
+                        PRECIP_MASS_FLUX = PRECIP_MASS_FLUX +  SNOW_MASS * VTS 
                      END IF
                    END IF
 
