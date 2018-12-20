@@ -2932,7 +2932,7 @@ package	ltng_crm_PR92w      lightning_option==1            -       state:ic_flas
 package ltng_crm_PR92z      lightning_option==2            -       state:ic_flashcount,ic_flashrate,cg_flashcount,cg_flashrate
 package	ltng_cpm_PR92z      lightning_option==11           -       state:ic_flashcount,ic_flashrate,cg_flashcount,cg_flashrate
 package	ltng_lpi            lightning_option==3           -        state:lpi
-package ltng_fed            lightning_option==101         -        state:fed,fed1,fed2,fed3,fed4,fed5,fed6,fed7,fed8,fed9,fed10,fed11,fed12;moist:qv,qc,qr,qi,qs,qg,qh
+package ltng_fed            lightning_option==101         -        state:ic_flashcount,ic_flashrate,cg_flashcount,cg_flashrate,fed,fed1,fed2,fed3,fed4,fed5,fed6,fed7,fed8,fed9,fed10,fed11,fed12;moist:qv,qc,qr,qi,qs,qg,qh
 # only need to specify these once; not for every io_form* variable
 package   io_intio    io_form_restart==1                     -             -
 package   io_netcdf   io_form_restart==2                     -             -

@@ -164,9 +164,13 @@
     CALL wrf_debug ( 100 , ' lightning_init: flash initializing lightning flash arrays' )
 
     ic_flashrate(:,:)  = 0.
+    CALL wrf_debug ( 200 , ' lightning_init: initialized ic_flashrate' )
     ic_flashcount(:,:) = 0.
+    CALL wrf_debug ( 200 , ' lightning_init: initialized ic_flashcount' )
     cg_flashrate(:,:)  = 0.
+    CALL wrf_debug ( 200 , ' lightning_init: initialized gc_flashrate' )
     cg_flashcount(:,:) = 0.
+    CALL wrf_debug ( 200 , ' lightning_init: initialized gc_flashcount' )
  ELSE
     CALL wrf_error_fatal ( ' lightning_init: flash arrays not present' )
  ENDIF
