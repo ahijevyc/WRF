@@ -1253,6 +1253,11 @@ endif
                     ! IC and CG flash rates and accumulated flash count
                         ,ic_flashcount=grid%ic_flashcount, ic_flashrate=grid%ic_flashrate        &
                         ,cg_flashcount=grid%cg_flashcount, cg_flashrate=grid%cg_flashrate        &
+                        ,fed =grid%fed                                                           &
+                        ,fed1=grid%fed1                                                          &
+                        ,fed2=grid%fed2                                                          &
+                        ,fed3=grid%fed3                                                          &
+                        ,fed4=grid%fed4                                                          &
 #if (WRF_CHEM == 1)
                         ,lnox_opt=config_flags%lnox_opt           &
                         ,lnox_passive=config_flags%lnox_passive   &

@@ -44,6 +44,8 @@
                             ! IC and CG flash rates and accumulated flash count
                              ,ic_flashcount, ic_flashrate              &
                              ,cg_flashcount, cg_flashrate              &
+                            ! FED accumulated flash counts
+                             ,fed,fed1,fed2,fed3,fed4                  &
 #if ( WRF_CHEM == 1 )
                              ,lnox_opt,lnox_passive                    &
                             ! LNOx tracers (chemistry only)
@@ -72,7 +74,10 @@
 ! Making these optional just in case qualitative lightning indices get implemented
  REAL, OPTIONAL, DIMENSION( ims:ime,jms:jme ), &
                  INTENT(OUT) :: ic_flashcount, ic_flashrate, &
-                                cg_flashcount, cg_flashrate
+                                cg_flashcount, cg_flashrate 
+
+ REAL, OPTIONAL, DIMENSION( ims:ime,jms:jme ), &
+                 INTENT(OUT) :: fed,fed1,fed2,fed3,fed4
 
 #if ( WRF_CHEM == 1 )
  INTEGER, INTENT(IN)         :: lnox_opt
@@ -179,16 +184,13 @@
  ENDIF
 
 !--zero out cumulative FED flash counts
- IF ( PRESENT( FED2 ) .and. PRESENT( FED4 ) .and. &
-      PRESENT( FED5 ) .and. PRESENT( FED6 ) .and. &
-      PRESENT( FED7 ) ) THEN
-
-    CALL wrf_debug ( 100 , ' lightning_init: zeroing out FED flash counts' )
-    FED2(:,:)  = 0.
-    FED4(:,:)  = 0.
-    FED5(:,:)  = 0.
-    FED6(:,:)  = 0.
-    FED7(:,:)  = 0.
+ CALL wrf_debug ( 100 , ' lightning_init: zeroing out FED flash counts' )
+ IF ( PRESENT(FED)  ) THEN
+     FED(:,:)  = 0.
+     FED1(:,:) = 0.
+     FED2(:,:) = 0.
+     FED3(:,:) = 0.
+     FED4(:,:) = 0.
  ENDIF
 
 !-- Resolve auto-cellcount method option (cellcount_method=0)
@@ -267,11 +269,21 @@
                           ! Mandatory outputs for all quantitative schemes
                             ic_flashcount, ic_flashrate,          &
                             cg_flashcount, cg_flashrate,          &
-                            lpi,fed,                              &
+                            lpi,                                  &
                           ! Optional outputs for flash extent density scheme
-                                 fed1,fed2,fed3,fed4,             &
-                            fed5,fed6,fed7,fed8,fed9,             &
-                            fed10,fed11,fed12                     &
+                             FED                                 &
+                            ,FED1                                & 
+                            ,FED2                                &
+                            ,FED3                                &
+                            ,FED4                                &
+                            ,FED_SNOW                                 &
+                            ,FED_ICE                                  &
+                            ,FED_GRAUP                                &
+                            ,FED_IWP                                  &
+                            ,FED_WVOL                                 &
+                            ,FED_WVOL2                                &
+                            ,FED_ICE_MASS_FLUX                        &
+                            ,FED_PRECIP_MASS_FLUX                     &
                           )
 !-----------------------------------------------------------------
 ! Framework
@@ -315,10 +327,23 @@
  TYPE(WRFU_Time),                                           INTENT(IN   ) :: current_time  ! For use of IC:CG input
 
  REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT), OPTIONAL :: LPI
- REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT), OPTIONAL :: FED
- REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT), OPTIONAL ::      FED1,FED2,FED3,FED4
- REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT), OPTIONAL :: FED5,FED6,FED7,FED8,FED9
- REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT), OPTIONAL :: FED10,FED11,FED12
+
+
+ REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT), OPTIONAL :: FED  &
+                                                                ,FED1 & 
+                                                                ,FED2 &
+                                                                ,FED3 &
+                                                                ,FED4 &
+                                                ,FED_SNOW             &
+                                                ,FED_ICE              &
+                                                ,FED_GRAUP            &
+                                                ,FED_IWP              &
+                                                ,FED_WVOL             &
+                                                ,FED_WVOL2            &
+                                                ,FED_ICE_MASS_FLUX    &
+                                                ,FED_PRECIP_MASS_FLUX                     
+
+
 ! Mandatory namelist inputs
  INTEGER, INTENT(IN   )    ::       lightning_option
  REAL,    INTENT(IN   )    ::       lightning_dt, lightning_start_seconds, flashrate_factor
@@ -347,6 +372,11 @@
  REAL(8) :: LtngActivationTime
  REAL(8) :: nextTime
  REAL, DIMENSION( ims:ime, jms:jme ) :: total_flashrate
+ REAL, DIMENSION( ims:ime, jms:jme ) :: FED_rate
+ REAL, DIMENSION( ims:ime, jms:jme ) :: FED1_rate
+ REAL, DIMENSION( ims:ime, jms:jme ) :: FED2_rate
+ REAL, DIMENSION( ims:ime, jms:jme ) :: FED3_rate
+ REAL, DIMENSION( ims:ime, jms:jme ) :: FED4_rate
  CHARACTER (LEN=80) :: message
  LOGICAL :: do_ltng
 
@@ -493,14 +523,29 @@
                      QS=moist(ims,kms,jms,P_QS),         &
                      QG=moist(ims,kms,jms,P_QG),         &
                      QH=moist(ims,kms,jms,P_QH),         &
-                  fed=fed, dx=dx, dy=dy                  &
+                     dx=dx, dy=dy                        &
                  ,IDS=ids,IDE=ide, JDS=jds,JDE=jde, KDS=kds,KDE=kde &
                  ,IMS=ims,IME=ime, JMS=jms,JME=jme, KMS=kms,KME=kme &
                  ,ITS=its,ITE=ite, JTS=jts,JTE=jte, KTS=kts,KTE=kte &
-                 ,FED1=fed1,FED2=fed2,FED3=fed3,FED4=fed4,FED5=fed5 &
-                 ,FED6=fed6,FED7=fed7,FED8=fed8,FED9=fed9           &
-                 ,FED10=fed10,FED11=fed11,FED12=fed12               &
+                 ,FED_rate  =  FED_rate                       &
+                 ,FED1_rate = FED1_rate                       &
+                 ,FED2_rate = FED2_rate                       &
+                 ,FED3_rate = FED3_rate                       &
+                 ,FED4_rate = FED4_rate                       &
+                 ,FED_SNOW  = FED_SNOW                        &
+                 ,FED_ICE   = FED_ICE                         &
+                 ,FED_GRAUP = FED_GRAUP                       &
+                 ,FED_IWP   = FED_IWP                         &
+                 ,FED_WVOL  = FED_WVOL                        &
+                 ,FED_WVOL2 = FED_WVOL2                       &
+                 ,FED_ICE_MASS_FLUX = FED_ICE_MASS_FLUX       &
+                 ,FED_PRECIP_MASS_FLUX = FED_PRECIP_MASS_FLUX &
                  )
+            FED(its:ite,jts:jte)  =  FED(its:ite,jts:jte) +  FED_rate(its:ite,jts:jte) * lightning_dt
+            FED1(its:ite,jts:jte) = FED1(its:ite,jts:jte) + FED1_rate(its:ite,jts:jte) * lightning_dt
+            FED2(its:ite,jts:jte) = FED2(its:ite,jts:jte) + FED2_rate(its:ite,jts:jte) * lightning_dt
+            FED3(its:ite,jts:jte) = FED3(its:ite,jts:jte) + FED3_rate(its:ite,jts:jte) * lightning_dt
+            FED4(its:ite,jts:jte) = FED4(its:ite,jts:jte) + FED4_rate(its:ite,jts:jte) * lightning_dt
         ELSE
         WRITE(wrf_err_message, * ) ' lightning_driver: FED option needs Microphysics Option with graupel,snow,and ice '
         CALL wrf_error_fatal ( wrf_err_message )

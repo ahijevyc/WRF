@@ -405,21 +405,19 @@ state    real   V10              ij     misc        1         -     irh01{22}{23
 # LPI
 state    real   LPI              ij     misc        1         -     rhdu   "LPI"                 "Lightning Potential Index"      "m^2 s-2"
 # fed based on ice water path
-state    real   fed              ij     misc        1         -     rh     "fed"                 "flash extent density"      "flashes km-2"
-# 5 m/s updraft threshold
-state    real   fed1             ij     misc        1         -     rh     "fed1"                "volume updraft5"           "m^3 per grid box"
-state    real   fed2             ij     misc        1         -     rh     "fed2"                "flash count updraft5"      "flashes"
-# 3 m/s updraft threshold
-state    real   fed3             ij     misc        1         -     rh     "fed3"                "volume updraft3"           "m^3 per grid box"
-state    real   fed4             ij     misc        1         -     rh     "fed4"                "flash count updraft3"      "flashes"
-state    real   fed5             ij     misc        1         -     rh     "fed5"                "flash count McCaul"        "flashes"
-state    real   fed6             ij     misc        1         -     rh     "fed6"                "flash count precip ice"    "flashes"
-state    real   fed7             ij     misc        1         -     rh     "fed7"                "flash count imass flx prd" "flashes"
-state    real   fed8             ij     misc        1         -     rh     "fed8"                "ice mass flux product"     "kg2 m s-2"
-state    real   fed9             ij     misc        1         -     rh     "fed9"                "ice water path"            "kg m-2"
-state    real   fed10            ij     misc        1         -     rh     "fed10"               "graupel mass"              "kg per grid box"
-state    real   fed11            ij     misc        1         -     rh     "fed11"               "ice mass"                  "kg per grid box"
-state    real   fed12            ij     misc        1         -     rh     "fed12"               "snow mass"                 "kg per grid box"
+state    real   fed              ij     misc        1         -     rh     "FED"                  "flash extent density"               "flashes km-2"
+state    real   fed1             ij     misc        1         -     rh     "FED1"                 "flash count based on WVOL"          "flashes"
+state    real   fed2             ij     misc        1         -     rh     "FED2"                 "flash count based on WVOL2"         "flashes"
+state    real   fed3             ij     misc        1         -     rh     "FED3"                 "flash count based on precip ice"    "flashes"
+state    real   fed4             ij     misc        1         -     rh     "FED4"                 "flash count based on flux product"  "flashes"
+state    real   fed_snow         ij     misc        1         -     rh     "FED_SNOW"             "FED snow mass in model column"      "kg"
+state    real   fed_ice          ij     misc        1         -     rh     "FED_ICE"              "FED ice mass in model column"       "kg"
+state    real   fed_graup        ij     misc        1         -     rh     "FED_GRAUP"            "FED graupel mass in model column"   "kg"
+state    real   fed_iwp          ij     misc        1         -     rh     "FED_IWP"              "FED ice water mass in model column" "kg"
+state    real   fed_wvol         ij     misc        1         -     rh     "FED_WVOL"             "FED WVOL in model column"           "m3"
+state    real   fed_wvol2        ij     misc        1         -     rh     "FED_WVOL2"            "FED WVOL2 in model column"          "m3"
+state    real   fed_ice_mass_flux    ij misc        1         -     rh     "FED_ICE_MASS_FLUX"    "FED upward ice mass flux"           "kg/s"
+state    real   fed_precip_mass_flux ij misc        1         -     rh     "FED_PRECIP_MASS_FLUX" "FED precipitating ice mass flux"    "kg/s"
 
 # these next 4 are for observational nudging
 state    real   uratx           ij      misc        1         -      r          "URATX"            "Ratio of U over U10 on mass points "         "dimensionless"

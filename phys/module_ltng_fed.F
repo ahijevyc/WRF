@@ -17,12 +17,22 @@ CONTAINS
                          QV,QC,QR,QI,QS,QG,QH                     &
                         ,W,Z,DZ8W,PI_PHY,TH_PHY,P_PHY,RHO_PHY     & ! DZ8W is thickness (meters) of each model layer
                         ,DX,DY                                    &
-                        ,FED                                      &
                         ,IDS,IDE, JDS,JDE, KDS,KDE                & ! domain
                         ,IMS,IME, JMS,JME, KMS,KME                & ! memory
                         ,ITS,ITE, JTS,JTE, KTS,KTE                & ! tile
-                        ,FED1, FED2, FED3, FED4, FED5, FED6       & ! OPTIONAL
-                        ,FED7, FED8, FED9, FED10,FED11,FED12      &
+                        ,FED_rate                                 &
+                        ,FED1_rate                                & 
+                        ,FED2_rate                                &
+                        ,FED3_rate                                &
+                        ,FED4_rate                                &
+                        ,FED_SNOW                                 &
+                        ,FED_ICE                                  &
+                        ,FED_GRAUP                                &
+                        ,FED_IWP                                  &
+                        ,FED_WVOL                                 &
+                        ,FED_WVOL2                                &
+                        ,FED_ICE_MASS_FLUX                        &
+                        ,FED_PRECIP_MASS_FLUX                     &
                                                                   )
 
       USE MODULE_WRF_ERROR
@@ -49,12 +59,20 @@ CONTAINS
 
       REAL, INTENT(IN ) :: DX, DY ! GRID SPACING IN METERS
 
-      REAL, INTENT(OUT), DIMENSION(IMS:IME,JMS:JME)::             &
-          FED
+      REAL, INTENT(OUT), DIMENSION(IMS:IME,JMS:JME)::  FED_rate   &
+                        ,FED1_rate                                & 
+                        ,FED2_rate                                &
+                        ,FED3_rate                                &
+                        ,FED4_rate                                &
+                        ,FED_SNOW                                 &
+                        ,FED_ICE                                  &
+                        ,FED_GRAUP                                &
+                        ,FED_IWP                                  &
+                        ,FED_WVOL                                 &
+                        ,FED_WVOL2                                &
+                        ,FED_ICE_MASS_FLUX                        &
+                        ,FED_PRECIP_MASS_FLUX                     
 
-      REAL, INTENT(OUT), DIMENSION(IMS:IME,JMS:JME), OPTIONAL ::  &
-          FED1, FED2, FED3, FED4, FED5, FED6, FED7, FED8, FED9,   &
-          FED10,FED11,FED12
 
 ! DEFINE LOCAL DATA
       REAL, DIMENSION(KTS:KTE):: TEMPC
@@ -93,6 +111,7 @@ CONTAINS
 
             ! INITIALIZE VERTICAL TOTALS TO ZERO
             AIR_MASS         = 0.
+            AIR_VOL          = 0.
             GRAUP_MASS       = 0.
             ICE_MASS         = 0.
             SNOW_MASS        = 0.
@@ -177,20 +196,28 @@ CONTAINS
             LIGHTWVOL       =    W_VOL * 6.75E-10                ! Deierling and Petersen 2008
             LIGHTWVOL2      =   W_VOL2 * 6.75E-10                ! Deierling and Petersen 2008
 
-            FED(I,J)  = LIGHTIWP
 
-            FED1(I,J)  = W_VOL 
-            FED2(I,J)  = LIGHTWVOL
-            FED3(I,J)  = W_VOL2
-            FED4(I,J)  = LIGHTWVOL2
-            FED5(I,J)  = LIGHTIWP
-            FED6(I,J)  = LIGHTPRECIP_ICE
-            FED7(I,J)  = LIGHTFLUX
-            FED8(I,J)  = FLUXPROD
-            FED9(I,J)  = IWP
-            FED10(I,J) = GRAUP_MASS
-            FED11(I,J) = ICE_MASS
-            FED12(I,J) = SNOW_MASS
+            FED_rate(I,J)             = LIGHTIWP
+            FED1_rate(I,J)            = LIGHTWVOL
+            FED2_rate(I,J)            = LIGHTWVOL2
+            FED3_rate(I,J)            = LIGHTPRECIP_ICE
+            FED4_rate(I,J)            = LIGHTFLUX
+            FED_SNOW(I,J)             = SNOW_MASS
+            FED_ICE(I,J)              = ICE_MASS
+            FED_GRAUP(I,J)            = GRAUP_MASS
+            FED_IWP(I,J)              = IWP
+            FED_WVOL(I,J)             = W_VOL
+            FED_WVOL2(I,J)            = W_VOL2
+            FED_ICE_MASS_FLUX(I,J)    = ICE_MASS_FLUX
+            FED_PRECIP_MASS_FLUX(I,J) = PRECIP_MASS_FLUX
+
+
+            ! TODO: Convert other rates to flashes per second
+            ! flash rates multiplied by lightning_dt (a time interval in seconds) in 
+            ! module_lightning_driver.F.  Output needs to be in flashes per second.
+            FED3_rate(I,J)  = FED3_rate(I,J) / 60. ! Convert from fl/min to fl/sec
+
+
 
          END DO
       END DO

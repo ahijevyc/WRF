@@ -225,10 +225,18 @@ CONTAINS
           ! Mandatory outputs for all quantitative schemes
             grid%ic_flashcount, grid%ic_flashrate,          &
             grid%cg_flashcount, grid%cg_flashrate,          &
-            grid%lpi,grid%fed,                                &
-            grid%fed1,grid%fed2,grid%fed3,grid%fed4,grid%fed5,&
-            grid%fed6,grid%fed7,grid%fed8,grid%fed9,          &
-            grid%fed10,grid%fed11,grid%fed12                  &
+          ! Optional outputs for lightning
+            grid%lpi                                        &
+           ,grid%fed                                          &
+           ,grid%fed1,grid%fed2,grid%fed3,grid%fed4           &
+           ,grid%fed_snow                                     &
+           ,grid%fed_ice                                      &
+           ,grid%fed_graup                                    &
+           ,grid%fed_iwp                                      &
+           ,grid%fed_wvol                                     &
+           ,grid%fed_wvol2                                    &
+           ,grid%fed_ice_mass_flux                            &
+           ,grid%fed_precip_mass_flux                         &
       )    
       END IF LIGHTNING
 
