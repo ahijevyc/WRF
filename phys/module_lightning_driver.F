@@ -31,6 +31,9 @@
                              ,cu_physics,mp_physics,do_radar_ref       &
                              ,lightning_option, lightning_dt           &
                              ,lightning_start_seconds                  &
+                            ! lightning activation time
+                            !  Initialized to lightning_start_seconds
+                            !  Incremented by lightning_dt
                              ,ltngacttime                              &
                              ,iccg_prescribed_num, iccg_prescribed_den &
                              ,cellcount_method                         &
@@ -173,6 +176,19 @@
     CALL wrf_debug ( 200 , ' lightning_init: initialized gc_flashcount' )
  ELSE
     CALL wrf_error_fatal ( ' lightning_init: flash arrays not present' )
+ ENDIF
+
+!--zero out cumulative FED flash counts
+ IF ( PRESENT( FED2 ) .and. PRESENT( FED4 ) .and. &
+      PRESENT( FED5 ) .and. PRESENT( FED6 ) .and. &
+      PRESENT( FED7 ) ) THEN
+
+    CALL wrf_debug ( 100 , ' lightning_init: zeroing out FED flash counts' )
+    FED2(:,:)  = 0.
+    FED4(:,:)  = 0.
+    FED5(:,:)  = 0.
+    FED6(:,:)  = 0.
+    FED7(:,:)  = 0.
  ENDIF
 
 !-- Resolve auto-cellcount method option (cellcount_method=0)
