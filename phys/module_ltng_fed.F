@@ -192,7 +192,7 @@ CONTAINS
             ! LIGHTNING FLASH EXTENT DENSITY ESTIMATES
             LIGHTFLUX       = FLUXPROD * 9E-17
             LIGHTIWP        =     IWP  * 0.20 / 2000**2 * DX * DY ! McCaul et al. 2009
-            LIGHTPRECIP_ICE =     3.4E-8 * GRAUP_MASS - 18.1     ! flashes per minute; Deierling et al. 2008
+            LIGHTPRECIP_ICE = MAX(0., 3.4E-8 * GRAUP_MASS - 18.1) ! flash/min. can't be negative. Deierling et al. 2008
             LIGHTWVOL       =    W_VOL * 6.75E-10                ! Deierling and Petersen 2008
             LIGHTWVOL2      =   W_VOL2 * 6.75E-10                ! Deierling and Petersen 2008
 
@@ -216,8 +216,6 @@ CONTAINS
             ! flash rates multiplied by lightning_dt (a time interval in seconds) in 
             ! module_lightning_driver.F.  Output needs to be in flashes per second.
             FED3_rate(I,J)  = FED3_rate(I,J) / 60. ! Convert from fl/min to fl/sec
-
-
 
          END DO
       END DO

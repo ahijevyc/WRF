@@ -16,3 +16,9 @@
 configure.wrf*
 *.backup
 *.f90
+wrfout_d*
+wrfinput_d*
+wrfbdy_d*
+met_em.d*.nc
+rsl.out*
+rsl.err*
